@@ -1,5 +1,3 @@
-#!/bin/bash
-: '
 # n8n YouTube AI Automation Workflow
 
 ## Overview
