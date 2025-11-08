@@ -1,0 +1,334 @@
+{
+  "name": "AI Automation Content",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "18DrF3wk-cma39VvjycsxTvG5J-luUtpRr4ahKQeTsSw"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18DrF3wk-cma39VvjycsxTvG5J-luUtpRr4ahKQeTsSw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video Link/Job": "={{$json[\"video_prompt\"]}}",
+            "Timestamp": "={{$now}}",
+            "Status": "=Pending",
+            "Blog Content": "=",
+            "Topic": "={{$json[\"topic\"]}}",
+            "Prompt": "={{$json[\"blog_prompt\"]}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Prompt",
+              "displayName": "Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Blog Content",
+              "displayName": "Blog Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video Link/Job",
+              "displayName": "Video Link/Job",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        368
+      ],
+      "id": "498fccd4-bf91-4a00-944c-dc60d8b282bd",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QVm6QV77iuFUlp73",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "a3c278f0-fbbe-4ded-95d5-0dbb72a9bcbb",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "q",
+              "value": "AI automation"
+            },
+            {
+              "name": "type",
+              "value": "video"
+            },
+            {
+              "name": "order",
+              "value": "viewCount"
+            },
+            {
+              "name": "maxResults",
+              "value": "3"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyDxwHS-wmOl4X2YIkYCex29l7GFI-Y4z6A"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        144
+      ],
+      "id": "c969c51f-3459-41a3-8c52-4e4e63ea80a4",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\n\n// Loop through only the first 3 input videos\nfor (const video of ($json.items || []).slice(0, 3)) {\n  const title = video.snippet.title || \"Unknown Topic\";\n  \n  items.push({\n    json: {\n      topic: title,\n      blog_prompt: \"\",\n      seo_keywords: \"\",\n      video_prompt: \"\",\n      timestamp: new Date().toISOString(),\n      status: \"Pending Review\"\n    }\n  });\n}\n\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        144
+      ],
+      "id": "e8ee4ea9-cc7f-4c48-889b-aaedcec509ed",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "maxTokens": 500,
+          "responseFormat": "json_object",
+          "temperature": 0.3,
+          "timeout": 60000,
+          "maxRetries": 3,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        -16
+      ],
+      "id": "1e409ebf-4a9f-4219-b59f-72369e4829e7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "p7b2WjyatNKEplZs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic: {{$json[\"topic\"]}}\nGenerate a short creative blog prompt, 3 SEO keywords, and a short video prompt about this topic. \nReturn valid JSON only, with keys: blog_prompt, seo_keywords (array of 3 strings), video_prompt.\n",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a professional blog writer. Expand the given blog_prompt into a 400-word engaging blog post with clear structure and SEO-friendly language."
+            }
+          ]
+        },
+        "batching": {
+          "batchSize": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        928,
+        144
+      ],
+      "id": "beab26aa-22d0-4c3e-a2cf-f48ac4e8f02b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\nconst allInput = $input.all().slice(0, 3); // take only 3 items\n\nfor (const item of allInput) {\n  const data = item.json;\n  const topic = data.topic || \"Sample Topic\";\n  \n  items.push({\n    json: {\n      topic: topic,\n      blog_prompt: data.blog_prompt || `Write a blog about ${topic}`,\n      seo_keywords: data.seo_keywords ? data.seo_keywords.join(\", \") : \"AI, n8n, Automation\",\n      video_prompt: data.video_prompt || `Create a video about ${topic}`,\n      timestamp: new Date().toISOString(),\n      status: \"Pending Review\"\n    }\n  });\n}\n\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        144
+      ],
+      "id": "03bc7de6-2f86-4e92-a26c-905d5ceb1f27",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "507727fa-d308-4ee9-9f9b-6942ee83f755",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "be383673f508aecd1de20f0c1242b19cd489d2751bebbeca520a617249d6dec1"
+  },
+  "id": "DzOqJD9QGwwcrJdT",
+  "tags": []
+}
