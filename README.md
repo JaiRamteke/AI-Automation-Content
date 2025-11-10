@@ -7,11 +7,15 @@ This n8n workflow automates YouTube content planning:
 - Populates a Google Sheet with topic, content prompts, timestamp, and status.
 - Processes exactly 3 videos per workflow execution.
 
+🎥 **Project Explanation Video:** [Watch on Google Drive](https://drive.google.com/drive/folders/1YL560tNP3d6LPu3zCD-Zpm6vZUTjGfHL?usp=sharing)
+
+---
+
 ## Workflow Steps
-1. YouTube Node:
+1. **YouTube Node:**
    - Fetches video metadata including title and description.
 
-2. Function Node (Prepare Content Items):
+2. **Function Node (Prepare Content Items):**
    - Extracts first 3 video titles.
    - Generates placeholders:
      - blog_prompt: "Write a blog about {video title}"
@@ -21,7 +25,7 @@ This n8n workflow automates YouTube content planning:
    - Outputs JSON items for Google Sheets node.
 
    Example Function Node Script:
-   --------------------------------
+   ```js
    const items = [];
    const allVideos = $json.items || [];
 
@@ -41,33 +45,46 @@ This n8n workflow automates YouTube content planning:
    }
 
    return items;
-   --------------------------------
+   ```
+---
 
-3. Basic LLM Chain Node (Optional):
-   - Generates actual blog content, SEO keywords, and video prompts using AI.
-   - Can replace placeholders from the Function node.
+3. **Basic LLM Chain Node (Optional):**  
+   - Generates actual blog content, SEO keywords, and video prompts using AI.  
+   - Can replace placeholders from the Function node.  
 
-4. Google Sheets Node:
-   - Appends the JSON items into the sheet with columns:
-     Topic, Blog Prompt, SEO Keywords, Video Prompt / Job, Timestamp, Status
+4. **Google Sheets Node:**  
+   - Appends the JSON items into the sheet with columns:  
+     Topic, Blog Prompt, SEO Keywords, Video Prompt / Job, Timestamp, Status  
 
-## Google Sheet Columns
-- Topic: YouTube video title
-- Blog Prompt: Placeholder or AI-generated content
-- SEO Keywords: Placeholder or AI-generated keywords
-- Video Prompt / Job: Placeholder or AI-generated video prompt
-- Timestamp: ISO timestamp
-- Status: "Pending Review"
+---
 
-## Setup Instructions
-1. Connect YouTube node with desired channel or playlist.
-2. Add Function node using the provided script.
-3. (Optional) Add AI node to generate content.
-4. Configure Google Sheets node to map JSON fields to columns.
-5. Run workflow and verify first 3 videos are appended.
+## Google Sheet Columns  
+- **Topic:** YouTube video title  
+- **Blog Prompt:** Placeholder or AI-generated content  
+- **SEO Keywords:** Placeholder or AI-generated keywords  
+- **Video Prompt / Job:** Placeholder or AI-generated video prompt  
+- **Timestamp:** ISO timestamp  
+- **Status:** "Pending Review"  
 
-## Notes
-- Adjust `.slice(0, 3)` to change number of videos processed.
-- Replace placeholders with AI-generated content for full automation.
-- Ensure Google Sheet columns match the JSON fields exactly.
-'
+---
+
+## Setup Instructions  
+1. Connect YouTube node with desired channel or playlist.  
+2. Add Function node using the provided script.  
+3. (Optional) Add AI node to generate content.  
+4. Configure Google Sheets node to map JSON fields to columns.  
+5. Run workflow and verify first 3 videos are appended.  
+
+---
+
+## Notes  
+- Adjust `.slice(0, 3)` to change number of videos processed.  
+- Replace placeholders with AI-generated content for full automation.  
+- Ensure Google Sheet columns match the JSON fields exactly.  
+
+---
+
+🟢 **Full Project Walkthrough:** [Click here to watch the explanation video](https://drive.google.com/drive/folders/1YL560tNP3d6LPu3zCD-Zpm6vZUTjGfHL?usp=sharing)  
+
+---
+
